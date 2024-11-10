@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.soft.admin.dao.IInfo2Dao">
+
+	<insert id="addInfo2" parameterType="Info2">
+		<![CDATA[
+			insert into info2
+				values(null,#{info2_title},#{info2_content},#{info2_admin},#{info2_date})
+		]]>
+	</insert>
+
+	<delete id="delInfo2" parameterType="int">
+		<![CDATA[
+			delete from info2 where info2_id=#{info2_id}
+		]]>
+	</delete>
+
+	<delete id="delInfo2s" parameterType="int">
+		<![CDATA[
+			delete from info2 where info2_id in 
+		]]>
+		<foreach collection="array" item="info2_ids"  open="(" separator="," close=")">
+			#{info2_ids}
+		</foreach>
+	</delete>
+
+	<update id="updateInfo2" parameterType="Info2">
+		<![CDATA[
+			UPDATE info2
+		]]>
+		<set>
+			<if test="info2_title!=null and info2_title!=''">
+			<![CDATA[
+				info2_title = #{info2_title},
+			]]>
+			</if>
+			<if test="info2_content!=null and info2_content!=''">
+			<![CDATA[
+				info2_content = #{info2_content},
+			]]>
+			</if>
+			<if test="info2_admin!=null and info2_admin!=''">
+			<![CDATA[
+				info2_admin = #{info2_admin}
+			]]>
+			</if>
+		</set>
+		<![CDATA[
+			where info2_id = #{info2_id}
+		]]>
+	</update>
+
+	<select id="getInfo2" parameterType="Info2" resultType="Info2">
+		<![CDATA[
+			SELECT * FROM info2
+		]]>
+		<where>
+			<if test="info2_id!=0">
+			<![CDATA[
+				info2_id = #{info2_id}
+			]]>
+			</if>
+		</where>
+	</select>
+
+	<select id="listInfo2s" parameterType="Info2" resultType="Info2">
+		<![CDATA[
+			SELECT * FROM (
+			SELECT * FROM info2
+		]]>
+		<where>
+			<if test="info2_id!=0">
+			<![CDATA[
+				info2_id = #{info2_id}
+			]]>
+			</if>
+			<if test="info2_title!=null and info2_title!=''">
+			<![CDATA[
+				and info2_title like '%${info2_title}%'
+			]]>
+			</if>
+		</where>
+		<![CDATA[
+			order by info2_date desc,info2_id asc) t
+		]]>
+		<if test="start!=-1">
+		<![CDATA[
+			Limit ${start},${limit}
+		]]>
+		</if>
+	</select>
+
+	<select id="listInfo2sCount" parameterType="Info2" resultType="int">
+		<![CDATA[
+			SELECT count(*) FROM info2
+		]]>
+		<where>
+			<if test="info2_id!=0">
+			<![CDATA[
+				info2_id = #{info2_id}
+			]]>
+			</if>
+			<if test="info2_title!=null and info2_title!=''">
+			<![CDATA[
+				and info2_title like '%${info2_title}%'
+			]]>
+			</if>
+		</where>
+	</select>
+
+</mapper>

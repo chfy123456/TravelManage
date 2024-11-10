@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.soft.admin.dao.IOrdershDao">
+
+	<insert id="addOrdersh" parameterType="Ordersh">
+		<![CDATA[
+			insert into ordersh
+				values(null,#{ordersh_no},#{user_id},#{real_name},#{user_phone},#{hotel_id},#{hotel_title},#{house_id},#{house_title},#{house_price},#{house_count},#{ordersh_money},#{come_date},#{ordersh_date},#{ordersh_flag})
+		]]>
+	</insert>
+
+	<delete id="delOrdersh" parameterType="int">
+		<![CDATA[
+			delete from ordersh where ordersh_id=#{ordersh_id}
+		]]>
+	</delete>
+
+	<delete id="delOrdershs" parameterType="int">
+		<![CDATA[
+			delete from ordersh where ordersh_id in 
+		]]>
+		<foreach collection="array" item="ordersh_ids"  open="(" separator="," close=")">
+			#{ordersh_ids}
+		</foreach>
+	</delete>
+	
+	<update id="updateOrdersh" parameterType="Ordersh">
+		<![CDATA[
+			UPDATE ordersh
+		]]>
+		<set>
+			<if test="ordersh_flag!=0">
+			<![CDATA[
+				ordersh_flag = #{ordersh_flag}
+			]]>
+			</if>
+		</set>
+		<![CDATA[
+			where ordersh_id = #{ordersh_id}
+		]]>
+	</update>
+
+	<update id="updateOrdershGq">
+		<![CDATA[
+			UPDATE ordersh set ordersh_flag=3 where ordersh_flag=1 and come_date < date_format(sysdate(),'%Y-%m-%d')
+		]]>
+	</update>
+
+	<select id="getOrdersh" parameterType="Ordersh" resultType="Ordersh">
+		<![CDATA[
+			SELECT h.* FROM ordersh h
+		]]>
+		<where>
+			<if test="ordersh_id!=0">
+			<![CDATA[
+				ordersh_id = #{ordersh_id}
+			]]>
+			</if>
+			<if test="ordersh_no!=null and ordersh_no!=''">
+			<![CDATA[
+				and ordersh_no = #{ordersh_no}
+			]]>
+			</if>
+		</where>
+	</select>
+
+	<select id="listOrdershs" parameterType="Ordersh" resultType="Ordersh">
+		<![CDATA[
+			SELECT * FROM (
+			SELECT h.* FROM ordersh h
+		]]>
+		<where>
+			<if test="ordersh_id!=0">
+			<![CDATA[
+				ordersh_id = #{ordersh_id}
+			]]>
+			</if>
+			<if test="ordersh_no!=null and ordersh_no!=''">
+			<![CDATA[
+				and ordersh_no like '%${ordersh_no}%'
+			]]>
+			</if>
+			<if test="user_id!=0">
+			<![CDATA[
+				and h.user_id = #{user_id}
+			]]>
+			</if>
+			<if test="real_name!=null and real_name!=''">
+			<![CDATA[
+				and real_name like '%${real_name}%'
+			]]>
+			</if>
+			<if test="hotel_id!=0">
+			<![CDATA[
+				and h.hotel_id = #{hotel_id}
+			]]>
+			</if>
+			<if test="hotel_title!=null and hotel_title!=''">
+			<![CDATA[
+				and hotel_title like '%${hotel_title}%'
+			]]>
+			</if>
+			<if test="house_id!=0">
+			<![CDATA[
+				and h.house_id = #{house_id}
+			]]>
+			</if>
+			<if test="house_title!=null and house_title!=''">
+			<![CDATA[
+				and house_title like '%${house_title}%'
+			]]>
+			</if>
+			<if test="ordersh_flag!=0">
+			<![CDATA[
+				and ordersh_flag = #{ordersh_flag}
+			]]>
+			</if>
+		</where>
+		<![CDATA[
+			order by ordersh_date desc,ordersh_id asc) t
+		]]>
+		<if test="start!=-1">
+		<![CDATA[
+			Limit ${start},${limit}
+		]]>
+		</if>
+	</select>
+
+	<select id="listOrdershsCount" parameterType="Ordersh" resultType="int">
+		<![CDATA[
+			SELECT count(*) FROM ordersh h
+		]]>
+		<where>
+			<if test="ordersh_id!=0">
+			<![CDATA[
+				ordersh_id = #{ordersh_id}
+			]]>
+			</if>
+			<if test="ordersh_no!=null and ordersh_no!=''">
+			<![CDATA[
+				and ordersh_no like '%${ordersh_no}%'
+			]]>
+			</if>
+			<if test="user_id!=0">
+			<![CDATA[
+				and h.user_id = #{user_id}
+			]]>
+			</if>
+			<if test="real_name!=null and real_name!=''">
+			<![CDATA[
+				and real_name like '%${real_name}%'
+			]]>
+			</if>
+			<if test="hotel_id!=0">
+			<![CDATA[
+				and h.hotel_id = #{hotel_id}
+			]]>
+			</if>
+			<if test="hotel_title!=null and hotel_title!=''">
+			<![CDATA[
+				and hotel_title like '%${hotel_title}%'
+			]]>
+			</if>
+			<if test="house_id!=0">
+			<![CDATA[
+				and h.house_id = #{house_id}
+			]]>
+			</if>
+			<if test="house_title!=null and house_title!=''">
+			<![CDATA[
+				and house_title like '%${house_title}%'
+			]]>
+			</if>
+			<if test="ordersh_flag!=0">
+			<![CDATA[
+				and ordersh_flag = #{ordersh_flag}
+			]]>
+			</if>
+		</where>
+	</select>
+
+</mapper>

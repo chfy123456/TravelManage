@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.soft.admin.dao.IHotelDao">
+
+	<insert id="addHotel" parameterType="Hotel">
+		<![CDATA[
+			insert into hotel
+				values(null,#{hotel_title},#{hotel_pic},#{hotel_content},#{hotel_address},#{hotel_phone},#{hotel_date})
+		]]>
+	</insert>
+
+	<delete id="delHotel" parameterType="int">
+		<![CDATA[
+			delete from hotel where hotel_id=#{hotel_id}
+		]]>
+	</delete>
+
+	<delete id="delHotels" parameterType="int">
+		<![CDATA[
+			delete from hotel where hotel_id in 
+		]]>
+		<foreach collection="array" item="hotel_ids"  open="(" separator="," close=")">
+			#{hotel_ids}
+		</foreach>
+	</delete>
+
+	<update id="updateHotel" parameterType="Hotel">
+		<![CDATA[
+			UPDATE hotel
+		]]>
+		<set>
+			<if test="hotel_title!=null and hotel_title!=''">
+			<![CDATA[
+				hotel_title = #{hotel_title},
+			]]>
+			</if>
+			<if test="hotel_pic!=null and hotel_pic!=''">
+			<![CDATA[
+				hotel_pic = #{hotel_pic},
+			]]>
+			</if>
+			<if test="hotel_content!=null and hotel_content!=''">
+			<![CDATA[
+				hotel_content = #{hotel_content},
+			]]>
+			</if>
+			<if test="hotel_phone!=null and hotel_phone!=''">
+			<![CDATA[
+				hotel_phone = #{hotel_phone},
+			]]>
+			</if>
+			<if test="hotel_address!=null and hotel_address!=''">
+			<![CDATA[
+				hotel_address = #{hotel_address}
+			]]>
+			</if>
+		</set>
+		<![CDATA[
+			where hotel_id = #{hotel_id}
+		]]>
+	</update>
+
+	<select id="getHotel" parameterType="Hotel" resultType="Hotel">
+		<![CDATA[
+			SELECT * FROM hotel
+		]]>
+		<where>
+			<if test="hotel_id!=0">
+			<![CDATA[
+				hotel_id = #{hotel_id}
+			]]>
+			</if>
+		</where>
+	</select>
+
+	<select id="listHotels" parameterType="Hotel" resultType="Hotel">
+		<![CDATA[
+			SELECT * FROM (
+			SELECT * FROM hotel
+		]]>
+		<where>
+			<if test="hotel_id!=0">
+			<![CDATA[
+				hotel_id = #{hotel_id}
+			]]>
+			</if>
+			<if test="hotel_title!=null and hotel_title!=''">
+			<![CDATA[
+				and hotel_title like '%${hotel_title}%'
+			]]>
+			</if>
+		</where>
+		<![CDATA[
+			order by hotel_date desc,hotel_id asc) t
+		]]>
+		<if test="start!=-1">
+		<![CDATA[
+			Limit ${start},${limit}
+		]]>
+		</if>
+	</select>
+
+	<select id="listHotelsCount" parameterType="Hotel" resultType="int">
+		<![CDATA[
+			SELECT count(*) FROM hotel
+		]]>
+		<where>
+			<if test="hotel_id!=0">
+			<![CDATA[
+				hotel_id = #{hotel_id}
+			]]>
+			</if>
+			<if test="hotel_title!=null and hotel_title!=''">
+			<![CDATA[
+				and hotel_title like '%${hotel_title}%'
+			]]>
+			</if>
+		</where>
+	</select>
+
+</mapper>

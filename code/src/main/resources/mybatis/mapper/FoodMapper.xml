@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.soft.admin.dao.IFoodDao">
+
+	<insert id="addFood" parameterType="Food">
+		<![CDATA[
+			insert into food
+				values(null,#{food_title},#{food_pic},#{food_content},#{food_admin},#{food_date})
+		]]>
+	</insert>
+
+	<delete id="delFood" parameterType="int">
+		<![CDATA[
+			delete from food where food_id=#{food_id}
+		]]>
+	</delete>
+
+	<delete id="delFoods" parameterType="int">
+		<![CDATA[
+			delete from food where food_id in 
+		]]>
+		<foreach collection="array" item="food_ids"  open="(" separator="," close=")">
+			#{food_ids}
+		</foreach>
+	</delete>
+
+	<update id="updateFood" parameterType="Food">
+		<![CDATA[
+			UPDATE food
+		]]>
+		<set>
+			<if test="food_title!=null and food_title!=''">
+			<![CDATA[
+				food_title = #{food_title},
+			]]>
+			</if>
+			<if test="food_pic!=null and food_pic!=''">
+			<![CDATA[
+				food_pic = #{food_pic},
+			]]>
+			</if>
+			<if test="food_content!=null and food_content!=''">
+			<![CDATA[
+				food_content = #{food_content},
+			]]>
+			</if>
+			<if test="food_admin!=null and food_admin!=''">
+			<![CDATA[
+				food_admin = #{food_admin}
+			]]>
+			</if>
+		</set>
+		<![CDATA[
+			where food_id = #{food_id}
+		]]>
+	</update>
+
+	<select id="getFood" parameterType="Food" resultType="Food">
+		<![CDATA[
+			SELECT * FROM food
+		]]>
+		<where>
+			<if test="food_id!=0">
+			<![CDATA[
+				food_id = #{food_id}
+			]]>
+			</if>
+		</where>
+	</select>
+
+	<select id="listFoods" parameterType="Food" resultType="Food">
+		<![CDATA[
+			SELECT * FROM (
+			SELECT * FROM food
+		]]>
+		<where>
+			<if test="food_id!=0">
+			<![CDATA[
+				food_id = #{food_id}
+			]]>
+			</if>
+			<if test="food_title!=null and food_title!=''">
+			<![CDATA[
+				and food_title like '%${food_title}%'
+			]]>
+			</if>
+		</where>
+		<![CDATA[
+			order by food_date desc,food_id asc) t
+		]]>
+		<if test="start!=-1">
+		<![CDATA[
+			Limit ${start},${limit}
+		]]>
+		</if>
+	</select>
+
+	<select id="listFoodsCount" parameterType="Food" resultType="int">
+		<![CDATA[
+			SELECT count(*) FROM food
+		]]>
+		<where>
+			<if test="food_id!=0">
+			<![CDATA[
+				food_id = #{food_id}
+			]]>
+			</if>
+			<if test="food_title!=null and food_title!=''">
+			<![CDATA[
+				and food_title like '%${food_title}%'
+			]]>
+			</if>
+		</where>
+	</select>
+
+</mapper>

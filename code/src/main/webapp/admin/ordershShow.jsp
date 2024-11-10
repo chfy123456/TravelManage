@@ -1,0 +1,162 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%> 
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %> 
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>酒店预订信息</title>
+<link href="css/main.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript">
+var tempClassName="";
+function tr_mouseover(obj) 
+{ 
+	tempClassName=obj.className;
+	obj.className="list_mouseover";
+}
+function tr_mouseout(obj)      
+{ 
+	obj.className=tempClassName;
+}      
+function CheckAll(obj) 
+{
+	var checks=document.getElementsByName("chkid");
+    for (var i=0;i<checks.length;i++)
+	{
+	    var e = checks[i];
+	    e.checked = obj.checked;
+	}
+    
+}
+
+
+function serch()
+{
+   document.info.action="Admin_listOrdershs.action";
+   document.getElementById("pageNo").value=1;
+   document.info.submit();
+}
+function del()
+{
+	var checks=document.getElementsByName("chkid");
+    var ids="";
+	for (var i=0;i<checks.length;i++)
+    {
+        var e = checks[i];
+		if(e.checked==true)
+		{
+		  if(ids=="")
+		  {
+		    ids=ids+e.value;
+		  }
+		  else
+		  {
+		    ids=ids+","+e.value;
+		  }
+		}
+    }
+    if(ids=="")
+    {
+       alert("请至少选择一个要删除的酒店预订！");
+       return false;
+    }
+    if(confirm('确认删除吗!?'))
+    {
+       document.info.action="Admin_delOrdershs.action?ids="+ids;
+       document.info.submit();
+    }
+    
+}
+function GoPage()
+{
+  var pagenum=document.getElementById("goPage").value;
+  var patten=/^\d+$/;
+  if(!patten.exec(pagenum))
+  {
+    alert("页码必须为大于0的数字");
+    return false;
+  }
+  document.getElementById("pageNo").value=pagenum;
+  document.info.action="Admin_listOrdershs.action";
+  document.info.submit();
+}
+function ChangePage(pagenum)
+{
+  document.getElementById("pageNo").value=pagenum;
+  document.info.action="Admin_listOrdershs.action";
+  document.info.submit();
+}
+</script>
+</head>
+<body>
+<div class="pageTitle">
+	&nbsp;&nbsp;<img src="images/right1.gif" align="middle" /> &nbsp;<span id="MainTitle" style="color:white">酒店预订管理&gt;&gt;酒店预订查询</span>
+</div>
+<form name="info" id="info" action="Admin_listOrdershs.action" method="post">
+<input type="hidden" name="pageNo" id="pageNo" value="${paperUtil.pageNo}"/>
+<table width="95%"  class="table_top" align="center" cellpadding="0" cellspacing="0">
+  <tr>
+    <td width="">酒店预订列表</td>
+    <td width="" align="right">
+		订单编号：
+		<input type="text" id="ordersh_no" name="ordersh_no" style="" value="${paramsOrdersh.ordersh_no}" class="inputstyle"/>&nbsp;
+		用户：
+		<input type="text" id="real_name" name="real_name" style="" value="${paramsOrdersh.real_name}" class="inputstyle"/>&nbsp;
+		酒店名称：
+		<input type="text" id="hotel_title" name="hotel_title" style="" value="${paramsOrdersh.hotel_title}" class="inputstyle"/>&nbsp;
+		<input type="button" value="搜索" onclick="serch();" class="btnstyle"/>&nbsp;
+        <input type="button" value="取消" onclick="del();" class="btnstyle"/>
+    </td>
+  </tr>
+</table>
+<table width="95%" align="center" class="table_list" cellpadding="0" cellspacing="0">
+   <tr class="listtitle">
+     <td width="40" align="center"><input type="checkbox" onclick="CheckAll(this);" style="vertical-align:text-bottom;" title="全选/取消全选"/></td>
+     <td width="40" align="center">序号</td>
+     <td width="" align="center">订单编号</td>
+     <td width="" align="center">用户</td>
+	 <td width="" align="center">电话</td>
+     <td width="200" align="center">酒店名称</td>
+	 <td width="" align="center">房间类型</td>
+	 <td width="" align="center">价格</td>
+	 <td width="" align="center">数量</td>
+	 <td width="" align="center">总额</td>
+	 <td width="" align="center">入住时间</td>
+	 <td width="" align="center">状态</td>
+	 <td width="" align="center">操作</td>
+   </tr>
+   <c:if test="${ordershs!=null &&  fn:length(ordershs)>0}">
+   <c:forEach items="${ordershs}" var="ordersh" varStatus="status">
+   <tr class="list0" onmouseover="tr_mouseover(this)" onmouseout="tr_mouseout(this)"> 
+     <td width="" align="center"><input type="checkbox" name="chkid" value="${ordersh.ordersh_id}" style="vertical-align:text-bottom;"/></td>
+     <td width="" align="center">${status.index+1+paramsOrdersh.start}</td>
+	 <td width="" align="center">${ordersh.ordersh_no}</td>  
+     <td width="" align="center">${ordersh.real_name}</td>  
+	 <td width="" align="center">${ordersh.user_phone}</td>  
+	 <td width="" align="center">${ordersh.hotel_title}</td>
+	 <td width="" align="center">${ordersh.house_title}</td>
+	 <td width="" align="center">${ordersh.house_price}</td>  
+	 <td width="" align="center">${ordersh.house_count}</td>  
+	 <td width="" align="center">${ordersh.ordersh_money}</td>  
+	 <td width="" align="center">${ordersh.come_date}</td>  
+	 <td width="" align="center">${ordersh.ordersh_flagDesc}</td>  
+	 <td width="" align="center">
+	    <c:if test="${ordersh.ordersh_flag==1}">
+	 	<a href="Admin_finishOrdersh.action?ordersh_id=${ordersh.ordersh_id}">确认入住</a>
+	 	</c:if>
+	 </td>
+   </tr> 
+   </c:forEach>
+   </c:if>
+   <c:if test="${ordershs==null ||  fn:length(ordershs)==0}">
+   <tr>
+     <td height="60" colspan="16" align="center"><b>&lt;不存在酒店预订信息&gt;</b></td>
+   </tr>
+   </c:if>
+   
+</table>
+<jsp:include page="page.jsp"></jsp:include>
+</form> 
+</body>
+</html>

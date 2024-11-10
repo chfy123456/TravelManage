@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.soft.admin.dao.ILineDao">
+
+	<insert id="addLine" parameterType="Line">
+		<![CDATA[
+			insert into line
+				values(null,#{line_title},#{line_pic},#{line_content},#{line_admin},#{line_date})
+		]]>
+	</insert>
+
+	<delete id="delLine" parameterType="int">
+		<![CDATA[
+			delete from line where line_id=#{line_id}
+		]]>
+	</delete>
+
+	<delete id="delLines" parameterType="int">
+		<![CDATA[
+			delete from line where line_id in 
+		]]>
+		<foreach collection="array" item="line_ids"  open="(" separator="," close=")">
+			#{line_ids}
+		</foreach>
+	</delete>
+
+	<update id="updateLine" parameterType="Line">
+		<![CDATA[
+			UPDATE line
+		]]>
+		<set>
+			<if test="line_title!=null and line_title!=''">
+			<![CDATA[
+				line_title = #{line_title},
+			]]>
+			</if>
+			<if test="line_pic!=null and line_pic!=''">
+			<![CDATA[
+				line_pic = #{line_pic},
+			]]>
+			</if>
+			<if test="line_content!=null and line_content!=''">
+			<![CDATA[
+				line_content = #{line_content},
+			]]>
+			</if>
+			<if test="line_admin!=null and line_admin!=''">
+			<![CDATA[
+				line_admin = #{line_admin}
+			]]>
+			</if>
+		</set>
+		<![CDATA[
+			where line_id = #{line_id}
+		]]>
+	</update>
+
+	<select id="getLine" parameterType="Line" resultType="Line">
+		<![CDATA[
+			SELECT * FROM line
+		]]>
+		<where>
+			<if test="line_id!=0">
+			<![CDATA[
+				line_id = #{line_id}
+			]]>
+			</if>
+		</where>
+	</select>
+
+	<select id="listLines" parameterType="Line" resultType="Line">
+		<![CDATA[
+			SELECT * FROM (
+			SELECT * FROM line
+		]]>
+		<where>
+			<if test="line_id!=0">
+			<![CDATA[
+				line_id = #{line_id}
+			]]>
+			</if>
+			<if test="line_title!=null and line_title!=''">
+			<![CDATA[
+				and line_title like '%${line_title}%'
+			]]>
+			</if>
+		</where>
+		<![CDATA[
+			order by line_date desc,line_id asc) t
+		]]>
+		<if test="start!=-1">
+		<![CDATA[
+			Limit ${start},${limit}
+		]]>
+		</if>
+	</select>
+
+	<select id="listLinesCount" parameterType="Line" resultType="int">
+		<![CDATA[
+			SELECT count(*) FROM line
+		]]>
+		<where>
+			<if test="line_id!=0">
+			<![CDATA[
+				line_id = #{line_id}
+			]]>
+			</if>
+			<if test="line_title!=null and line_title!=''">
+			<![CDATA[
+				and line_title like '%${line_title}%'
+			]]>
+			</if>
+		</where>
+	</select>
+
+</mapper>

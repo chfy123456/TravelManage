@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.soft.admin.dao.IPotDao">
+
+	<insert id="addPot" parameterType="Pot">
+		<![CDATA[
+			insert into pot
+				values(null,#{pot_title},#{pot_pic},#{pot_price},#{pot_content},#{pot_admin},#{pot_date})
+		]]>
+	</insert>
+
+	<delete id="delPot" parameterType="int">
+		<![CDATA[
+			delete from pot where pot_id=#{pot_id}
+		]]>
+	</delete>
+
+	<delete id="delPots" parameterType="int">
+		<![CDATA[
+			delete from pot where pot_id in 
+		]]>
+		<foreach collection="array" item="pot_ids"  open="(" separator="," close=")">
+			#{pot_ids}
+		</foreach>
+	</delete>
+
+	<update id="updatePot" parameterType="Pot">
+		<![CDATA[
+			UPDATE pot
+		]]>
+		<set>
+			<if test="pot_title!=null and pot_title!=''">
+			<![CDATA[
+				pot_title = #{pot_title},
+			]]>
+			</if>
+			<if test="pot_pic!=null and pot_pic!=''">
+			<![CDATA[
+				pot_pic = #{pot_pic},
+			]]>
+			</if>
+			<if test="pot_price!=0">
+			<![CDATA[
+				pot_price = #{pot_price},
+			]]>
+			</if>
+			<if test="pot_content!=null and pot_content!=''">
+			<![CDATA[
+				pot_content = #{pot_content},
+			]]>
+			</if>
+			<if test="pot_admin!=null and pot_admin!=''">
+			<![CDATA[
+				pot_admin = #{pot_admin}
+			]]>
+			</if>
+		</set>
+		<![CDATA[
+			where pot_id = #{pot_id}
+		]]>
+	</update>
+
+	<select id="getPot" parameterType="Pot" resultType="Pot">
+		<![CDATA[
+			SELECT * FROM pot
+		]]>
+		<where>
+			<if test="pot_id!=0">
+			<![CDATA[
+				pot_id = #{pot_id}
+			]]>
+			</if>
+		</where>
+	</select>
+
+	<select id="listPots" parameterType="Pot" resultType="Pot">
+		<![CDATA[
+			SELECT * FROM (
+			SELECT p.*,IFNULL(t1.buy_count,0) buy_count
+			  FROM pot p 
+			  left join (select pot_id,sum(pot_count) buy_count from orders group by pot_id) t1 on p.pot_id=t1.pot_id
+		]]>
+		<where>
+			<if test="pot_id!=0">
+			<![CDATA[
+				p.pot_id = #{pot_id}
+			]]>
+			</if>
+			<if test="pot_title!=null and pot_title!=''">
+			<![CDATA[
+				and pot_title like '%${pot_title}%'
+			]]>
+			</if>
+			<if test="pot_price1!=null and pot_price1!=''">
+			<![CDATA[
+				and pot_price >= ${pot_price1}
+			]]>
+			</if>
+			<if test="pot_price2!=null and pot_price2!=''">
+			<![CDATA[
+				and pot_price <= ${pot_price2}
+			]]>
+			</if>
+		</where>
+		<if test="hot_flag!=0">
+		<![CDATA[
+			order by IFNULL(t1.buy_count,0) desc,pot_date desc,p.pot_id asc) t
+		]]>
+		</if>
+		<if test="hot_flag==0">
+		<![CDATA[
+			order by pot_date desc,p.pot_id asc) t
+		]]>
+		</if>
+		<if test="start!=-1">
+		<![CDATA[
+			Limit ${start},${limit}
+		]]>
+		</if>
+	</select>
+
+	<select id="listPotsCount" parameterType="Pot" resultType="int">
+		<![CDATA[
+			SELECT count(*) FROM pot
+		]]>
+		<where>
+			<if test="pot_id!=0">
+			<![CDATA[
+				pot_id = #{pot_id}
+			]]>
+			</if>
+			<if test="pot_title!=null and pot_title!=''">
+			<![CDATA[
+				and pot_title like '%${pot_title}%'
+			]]>
+			</if>
+			<if test="pot_price1!=null and pot_price1!=''">
+			<![CDATA[
+				and pot_price >= ${pot_price1}
+			]]>
+			</if>
+			<if test="pot_price2!=null and pot_price2!=''">
+			<![CDATA[
+				and pot_price <= ${pot_price2}
+			]]>
+			</if>
+		</where>
+	</select>
+
+</mapper>
